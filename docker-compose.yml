@@ -1,0 +1,35 @@
+version : '3'
+services :
+    db :
+        container_name : dev-mysql
+        build          : ./conf/mariadb
+        environment :
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_USER=dev
+            - MYSQL_PASSWORD=dev
+        volumes :
+            - db-sock:/var/run/mysqld/
+    phpfpm :
+        container_name : dev-php
+        build          : ./conf/php/7.1.3
+        user           : dev
+        volumes        :
+            - ./html:/var/www/html
+            - php-sock:/var/run/php-fpm
+            - db-sock:/var/run/mysqld/
+    nginx :
+        container_name : dev-nginx
+        build          : ./conf/nginx
+        ports          :
+            - 80:80
+            - 443:443
+        expose :
+            - 80
+        volumes :
+            - ./html:/var/www/html
+            - php-sock:/var/run/php-fpm
+
+volumes :
+    php-sock :
+    db-sock  :
+    db       :
