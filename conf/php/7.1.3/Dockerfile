@@ -5,33 +5,24 @@ MAINTAINER yokotak0527 <mail@yokotakenji.me>
 ARG AGENT_UID=1000
 RUN adduser -D -H -s /bin/sh -u ${AGENT_UID} dev
 
-# https://askubuntu.com/questions/788739/502-bad-gateway-nginx-php7-fpm
-#RUN apk --no-cache add libpcre3
+RUN \
+    apk add --no-cache \
+        curl-dev \
+        libmcrypt-dev \
+        freetype-dev \
+        libjpeg-turbo-dev \
+        libpng-dev \
+        libxml2-dev \
+        zlib-dev
 
-# setup php
-#RUN apk --no-cache add \
-#  curl-dev \
-#  libmcrypt-dev \
-#  freetype-dev \
-#  libjpeg-turbo-dev \
-#  libpng-dev \
-#  libxml2-dev \
-#  zlib-dev \
-#  && NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) \
-#  && docker-php-ext-install -j${NPROC} \
-#    curl \
-#    dom \
-#    mbstring \
-#    mcrypt \
-#    pdo \
-#    pdo_mysql \
-#    simplexml \
-#    zip \
-#  && docker-php-ext-configure gd \
-#    --with-freetype-dir=/usr/include/ \
-#    --with-jpeg-dir=/usr/include/ \
-#    --with-png-dir=/usr/include/ \
-#  && docker-php-ext-install -j${NPROC} gd
+RUN docker-php-ext-install \
+    pdo_mysql \
+    mysqli \
+    mbstring \
+    gd \
+    exif \
+    sockets \
+    mcrypt
 
 RUN mkdir -p /var/run/php-fpm
 RUN chown dev:dev /var/run/php-fpm
